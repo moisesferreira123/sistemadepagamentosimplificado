@@ -1,12 +1,16 @@
 package com.sistemadepagamentosimplificado.domain.transaction;
 
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
+
+import com.sistemadepagamentosimplificado.domain.user.User;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.EqualsAndHashCode;
@@ -29,4 +33,15 @@ public class Transaction {
 
   @Column(nullable = false)
   private BigDecimal value;
+
+  @Column(nullable = false)
+  private LocalDateTime transactionDate;
+
+  @ManyToOne
+  @Column(nullable = false)
+  private User payer;
+
+  @ManyToOne
+  @Column(nullable = false)
+  private User payee;
 }

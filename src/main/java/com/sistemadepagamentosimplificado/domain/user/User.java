@@ -2,6 +2,8 @@ package com.sistemadepagamentosimplificado.domain.user;
 
 import java.math.BigDecimal;
 
+import com.sistemadepagamentosimplificado.dto.UserDTO;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -45,4 +47,13 @@ public class User {
 
   @Enumerated(EnumType.STRING)
   private UserType userType;
+
+  public User(UserDTO user) {
+    this.fullName = user.getFullName();
+    this.identificationDocument = user.getIdentificationDocument();
+    this.email = user.getEmail();
+    this.password = user.getPassword();
+    this.balance = user.getBalance();
+    this.userType = user.getUserType();
+  }
 }
