@@ -22,7 +22,7 @@ public class UserService {
   }
 
   public User getUserById(Long id) throws Exception {
-    return this.userRepository.findById(id).orElseThrow(() -> new Exception("ID do usuário não encontrado"));
+    return this.userRepository.findById(id).orElseThrow(() -> new Exception("User ID not found"));
   }
 
   private void isValidDTOToCreation(UserDTO userDTO) throws InvalidObjectException {
