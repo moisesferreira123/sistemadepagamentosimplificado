@@ -48,7 +48,7 @@ public class TransactionService {
 
     if(!authorizeTransaction()) {
       throw new Exception("Unauthorized transaction");
-    }
+    } 
 
     Transaction transaction = new Transaction();
     transaction.setPayer(payer);
@@ -60,19 +60,27 @@ public class TransactionService {
     payee.setBalance(payee.getBalance().add(transactionDTO.value()));
 
     transactionRepository.save(transaction);
-    notificationService.sendNotification(payer.getEmail(), "Payment of " + transaction.getValue() + " was made successfully");
-    notificationService.sendNotification(payee.getEmail(), "You have successfully received payment of " + transaction.getValue());
+    try {
+      notificationService.sendNotification(payer.getEmail(), "Payment of " + transaction.getValue() + " was made successfully");
+      notificationService.sendNotification(payee.getEmail(), "You have successfully received payment of " + transaction.getValue());
+    } catch(Exception e) {
+      throw new Exception("Notification service unavailable");
+    }
 
     return transaction;
   }
 
   @SuppressWarnings({ "unchecked", "rawtypes" })
   private boolean authorizeTransaction() {
-    ResponseEntity<Map> authorizationResponse = restTemplate.getForEntity("https://util.devi.tools/api/v2/authorize", Map.class);
-    
-    if(authorizationResponse.getStatusCode() == HttpStatus.OK) {
-      Map<String, Boolean> data = (Map<String, Boolean>) authorizationResponse.getBody().get("data");
-      return data.get("authorization") == true;
+    try {
+      ResponseEntity<Map> authorizationResponse = restTemplate.getForEntity("https://util.devi.tools/api/v2/authorize", Map.class);
+
+      if(authorizationResponse.getStatusCode() == HttpStatus.OK) {
+        Map<String, Boolean> data = (Map<String, Boolean>) authorizationResponse.getBody().get("data");
+        return data.get("authorization") == true;
+      }
+    } catch(Exception e) {
+      return false;
     }
 
     return false;
