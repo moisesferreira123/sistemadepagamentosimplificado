@@ -30,7 +30,7 @@ public class TransactionService {
   @Autowired
   NotificationService notificationService;
 
-  public void createTransaction(TransactionDTO transactionDTO) throws Exception {
+  public Transaction createTransaction(TransactionDTO transactionDTO) throws Exception {
     User payer = userService.getUserById(transactionDTO.payerId());
     User payee = userService.getUserById(transactionDTO.payeeId());
 
@@ -56,13 +56,18 @@ public class TransactionService {
     transaction.setValue(transactionDTO.value());
     transaction.setTransactionDate(LocalDateTime.now());
 
+    payer.setBalance(payer.getBalance().subtract(transactionDTO.value()));
+    payee.setBalance(payee.getBalance().add(transactionDTO.value()));
+
     transactionRepository.save(transaction);
     notificationService.sendNotification(payer.getEmail(), "Payment of " + transaction.getValue() + " was made successfully");
     notificationService.sendNotification(payee.getEmail(), "You have successfully received payment of " + transaction.getValue());
+
+    return transaction;
   }
 
   @SuppressWarnings({ "unchecked", "rawtypes" })
-  public boolean authorizeTransaction() {
+  private boolean authorizeTransaction() {
     ResponseEntity<Map> authorizationResponse = restTemplate.getForEntity("https://util.devi.tools/api/v2/authorize", Map.class);
     
     if(authorizationResponse.getStatusCode() == HttpStatus.OK) {

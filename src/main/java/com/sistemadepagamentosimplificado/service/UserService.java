@@ -2,6 +2,7 @@ package com.sistemadepagamentosimplificado.service;
 
 import java.io.InvalidObjectException;
 import java.math.BigDecimal;
+import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -24,6 +25,11 @@ public class UserService {
   public User getUserById(Long id) throws Exception {
     return this.userRepository.findById(id).orElseThrow(() -> new Exception("User ID not found"));
   }
+
+  public List<User> getUsers() {
+    return this.userRepository.findAll();
+  }
+  
 
   private void isValidDTOToCreation(UserDTO userDTO) throws InvalidObjectException {
     if(userDTO.getFullName() == null || userDTO.getFullName().isEmpty()) {
